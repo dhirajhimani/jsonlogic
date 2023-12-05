@@ -27,6 +27,9 @@ bool isEqual(Applier applier, dynamic data, List params) {
   }
   var v1 = applier(params[0], data);
   var v2 = applier(params[1], data);
+  if (v1 is List || v2 is List) {
+    return compareContent(v1, v2);
+  }
   if (v1 is String || v2 is String) {
     return toString(v1) == toString(v2);
   }
@@ -34,6 +37,35 @@ bool isEqual(Applier applier, dynamic data, List params) {
     return truth(v1) == truth(v2);
   }
   return v1 == v2;
+}
+
+bool compareContent(dynamic first, dynamic second) {
+  if (first is List && second is List) {
+    return listEquals(first, second);
+  } else if (first is List) {
+    return listEquals(first, [second]);
+  } else if (second is List) {
+    return listEquals([first], second);
+  }
+  return false;
+}
+
+bool listEquals<T>(List<T>? a, List<T>? b) {
+  if (a == null) {
+    return b == null;
+  }
+  if (b == null || a.length != b.length) {
+    return false;
+  }
+  if (identical(a, b)) {
+    return true;
+  }
+  for (int index = 0; index < a.length; index += 1) {
+    if (a[index] != b[index]) {
+      return false;
+    }
+  }
+  return true;
 }
 
 dynamic equalOperator(Applier applier, dynamic data, List params) {
